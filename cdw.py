@@ -48,7 +48,7 @@ expected_messages = {"help me":"help" ,
 # Initialise empty log entry
 logData={'contactEmail' : '','inputText': '','actionTaken': ''}
 # Load vendor contacts into array
-vendorArray = numpy.loadtxt('vendors.csv',delimiter=',',dtype=str,skiprows=1,encoding='utf-8')
+vendorArray = numpy.genfromtxt('vendors.csv',delimiter=',',dtype=str,skip_header=1,encoding='utf-8')
 # Define Spark functions for GET and POST API calls
 def send_spark_get(url, payload=None,js=True):
 
@@ -69,7 +69,8 @@ def send_spark_post(url, data):
 
 # Function to search for vendor
 def findVendorContacts(vendorSearch):
-    for i in numpy.nditer(vendorArray):
+    for i in vendorArray:
+        print (i)
         if vendorSearch.upper() in i[0].upper():
             vendorName = str(i[0])
             vendorCertificationlevel = i[1]
