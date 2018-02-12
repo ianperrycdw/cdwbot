@@ -2,3 +2,4 @@ botConfig.json
 .vscode
 launch.json
 vendors.csv
+logFile.json
