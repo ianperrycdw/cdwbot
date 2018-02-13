@@ -1,3 +1,5 @@
+# CDW bot
+# 2018 - Ian Perry (i.perry@uk.cdw.com)
 import requests
 import json
 import sys
