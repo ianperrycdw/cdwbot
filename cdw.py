@@ -1,4 +1,3 @@
-import numpy
 import requests
 import json
 import sys
