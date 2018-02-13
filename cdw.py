@@ -7,6 +7,7 @@ import hashlib
 import hmac
 import sys
 import locale
+import csv
 from flask import Flask
 from flask import request
 # Load bot parameters from config file (excluded from GIT)
@@ -48,7 +49,12 @@ expected_messages = {"help me":"help" ,
 # Initialise empty log entry
 logData={'contactEmail' : '','inputText': '','actionTaken': ''}
 # Load vendor contacts into array
-vendorArray = numpy.genfromtxt('vendors.csv',delimiter=',',dtype=str,skip_header=1,encoding='utf-8')
+vendorList = []
+with open('vendors.csv', mode='r',encoding='utf-8') as vendorCSV:
+    reader = csv.DictReader(vendorCSV)
+    for line in reader:
+        vendorList.append(line)
+
 # Define Spark functions for GET and POST API calls
 def send_spark_get(url, payload=None,js=True):
 
@@ -69,26 +75,26 @@ def send_spark_post(url, data):
 
 # Function to search for vendor
 def findVendorContacts(vendorSearch):
-    for i in vendorArray:
-        print (i)
-        if vendorSearch.upper() in i[0].upper():
-            vendorName = str(i[0])
-            vendorCertificationlevel = i[1]
-            vendorContactname = i[2]
-            vendorContactemail = i[3]
-            vendorContactphone = i[4]
-            cdwPartnermanagername = i[5]
-            cdwPartnermanageremail = i[6]
-            cdwPartnermanagerphone = i[7]
-            cdwVendorstatus = i[8]
+    for vendor in vendorList:
+        if vendorSearch.upper() in vendor['\ufeffPartner'].upper():
+            vendorName = str(vendor['\ufeffPartner'])
+            vendorCertificationlevel = vendor['Certification Level']
+            vendorContactname = vendor['Partner Account Manager']
+            vendorContactemail = vendor['PAM Email']
+            vendorContactphone = vendor['PAM Phone Number']
+            cdwPartnermanagername = vendor['CDW Partner Manager']
+            cdwPartnermanageremail = vendor['CDW PM Email']
+            cdwPartnermanagerphone = vendor['CDW PM Phone Number']
+            cdwVendorstatus = vendor['Partner Status']
             return "**Vendor:** " + vendorName + "<br/>" \
             "**Contact**: " + vendorContactname + "<br/>" \
             "**E-Mail:** " + vendorContactemail + "<br/>" \
             "**Phone:** " + vendorContactphone + "<br/>" \
             "CDW is a " + vendorCertificationlevel + " partner with " + vendorName + " and we categorise them as " + cdwVendorstatus + "<br/>" \
             "They are managed by " + cdwPartnermanagername + " / " + cdwPartnermanageremail + " / " + cdwPartnermanagerphone
-        else:
-            return "No matching vendor found for " + vendorSearch
+    return "No matching vendor found for " + vendorSearch
+            
+
 def help_me():
 
     return "Charlie, the CDW UK bot 🤖 <br/>" \
@@ -97,9 +103,6 @@ def help_me():
            "* `tube TUBELINENAME`  - display current status of a specific underground line<br/> "\
            "* `vendor VENDORNAME` - display contact details for a CDW vendor <br/>"
 
-def rude():
-    return " 😠 You kiss your mother with that mouth? <br/>"\
-           " 😘👩"
 
 def lineStatus(line):
     #First search to get proper lineID
@@ -196,7 +199,7 @@ def spark_webhook():
                     msg = order()
                 else:
                     logData.update({'actionTaken':'NONE-not a CDW user'})
-                    msg = 'Sorry, this is for internal users only'
+                    msg = 'This feature is only available to CDW co-workers'
             elif in_message.startswith("tube"):
                 message = in_message.split('tube ')[1]
                 if len(message) > 0:
@@ -207,11 +210,14 @@ def spark_webhook():
             elif in_message.startswith("vendor"):
                 message = in_message.split('vendor ')[1]
                 if len(message) > 0:
-                    logData.update({'actionTaken':'vendor'})
-                    msg = findVendorContacts(message)
+                    if internaluser:
+                        logData.update({'actionTaken':'vendor'})
+                        msg = findVendorContacts(message)
+                    else:
+                        logData.update({'actionTaken':'NONE-not a CDW user'})
+                        msg = 'This feature is only available to CDW co-workers'
                 else:
-                    msg = "You need to put the name of the vendor to search for"
-
+                    msg = 'You need to put the name of the vendor to search for'
             else:
                 msg = "Sorry, but I did not understand your request. Type `Help me` to see what I can do"
             if msg != None:

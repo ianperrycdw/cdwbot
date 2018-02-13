@@ -3,3 +3,4 @@ botConfig.json
 launch.json
 vendors.csv
 logFile.json
+csv.py
