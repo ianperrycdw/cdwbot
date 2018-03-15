@@ -76,7 +76,7 @@ def send_spark_post(url, data):
 
 # Function to search for vendor
 def findVendorContacts(vendorSearch):
-    vendorResults = ""
+    vendorResults = "Matching vendors for \'_" + vendorSearch + "\'_ <br/>"
     for vendor in vendorList:
         if vendorSearch.upper() in vendor['\ufeffPartner'].upper():
             vendorName = str(vendor['\ufeffPartner'])
@@ -88,15 +88,15 @@ def findVendorContacts(vendorSearch):
             cdwPartnermanageremail = vendor['CDW PM Email']
             cdwPartnermanagerphone = vendor['CDW PM Phone Number']
             cdwVendorstatus = vendor['Partner Status']
-            vendorResults += "**Vendor:** " + vendorName + "<br/>" \
+            vendorResults += "<br/> **Vendor:** " + vendorName + "<br/>" \
             "**Contact**: " + vendorContactname + "<br/>" \
             "**E-Mail:** " + vendorContactemail + "<br/>" \
             "**Phone:** " + vendorContactphone + "<br/>" \
             "CDW is a " + vendorCertificationlevel + " partner with " + vendorName + " and we categorise them as " + cdwVendorstatus + "<br/>" \
             "They are managed by " + cdwPartnermanagername + " / " + cdwPartnermanageremail + " / " + cdwPartnermanagerphone + "<br/>" \
-            "- - -"
-    if vendorResults == "":
-        vendorResults = "No matching vendor found for " + vendorSearch
+            "- - - <br/>"
+    if vendorResults == "Matching vendors for \'_" + vendorSearch + "\'_ <br/>":
+        vendorResults = "No matching vendor found for _" + vendorSearch + "_"
     return vendorResults    
 
 def help_me():
