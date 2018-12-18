@@ -181,7 +181,7 @@ def spark_webhook():
                             }
                             )
         msg = None
-        if authenticated and "@sparkbot.io" not in webhook['data']['personEmail']:
+        if authenticated and "@webex.bot" not in webhook['data']['personEmail']:
             result = send_spark_get(
                 'https://api.ciscospark.com/v1/messages/{0}'.format(webhook['data']['id']))
             callinguser = webhook['data']['personId']
